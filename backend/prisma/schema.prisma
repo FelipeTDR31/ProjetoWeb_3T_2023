@@ -1,16 +1,14 @@
-# FakeTinderProject
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-Este projeto é feito com Prisma ORM e NextJS e é sobre avaliar linguagens de programação a partir de suas Imagens.
+generator client {
+  provider = "prisma-client-js"
+}
 
-Criadores: Felipe Estevo Gomes
-
-Comandos para iniciar o Backend:
-npm init -y
-npm i typescript
-npm install prisma --save-dev
-npx prisma init --datasource-provider sqlite
-
-Modelos:
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
 
 model User{
   id Int @id @default(autoincrement())
@@ -38,4 +36,3 @@ model User_Item{
   @@id([userID,itemID])
 }
 
-npx prisma migrate dev --name init
