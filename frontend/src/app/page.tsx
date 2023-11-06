@@ -1,40 +1,27 @@
 'use client'
 
+import Link from 'next/link';
+
 export default function Home() {
-
-
-    async function createUser() {
-      let inputs:NodeListOf<HTMLInputElement> = document.querySelectorAll(".userIp")
-      let name=inputs[0].value
-      let email=inputs[1].value
-      let password
-      if (inputs[2].value==inputs[3].value) {
-        password = inputs[2].value
-      }
-      const user = await fetch("http://localhost:4000/register", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({name, email, password})
-    })
-      const json = await user.json()
-      console.log(json)
-    }
-
+    
   return (
-    <main>
-      <div className='userLog'>
-        <h1 className='title'>Task Manager</h1>
-        <form action="">
-          <input className='userInp' type="text" id='userName' name='userName' placeholder='Name' />
-          <input className='userInp' type="email" id='userEmail' name='userEmail' placeholder='E-mail' />
-          <input className='userInp' type="password" id='userPass' name='userPass' placeholder='Senha' />
-          <input className='userInp' type="password" id='userConfirm' name='userConfirm' placeholder='Confirmar senha' />
+      <>
+        <nav>
+          <h3>Rate Programming Languages</h3>
+          <Link href="/register">Registrar-se</Link>
+          <Link href="/login">Entrar</Link>
+        </nav>
+        
+        <main>
+            <p>
+              Descrição do Trabalho:
 
-          <button type="submit" onClick={createUser}>Enviar</button>
-        </form>
-      </div>
-    </main>
-  )
+              Este trabalho de programação envolve a criação de uma plataforma web semelhante ao Tinder, mas com um foco exclusivo na avaliação de linguagens de programação. A ideia é proporcionar aos desenvolvedores e entusiastas de programação uma maneira divertida e envolvente de descobrir, aprender e compartilhar informações sobre diferentes linguagens de programação.
+            </p>
+            <p>
+              Programador: Felipe Gomes
+            </p>
+        </main>
+      </>
+    )
 }

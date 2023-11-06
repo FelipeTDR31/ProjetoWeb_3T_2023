@@ -1,18 +1,26 @@
 import { Router } from 'express'
+import session from 'express-session'
 import prisma from "../prisma_client/index.js"
- const router = Router()
+
+const router = Router()
 
 router.post('/register', async (req, res) => {
-    const { name, email, password } = req.body
+    try {
+        const { name, email, password } = req.body
+        const user = await prisma.user.create({
+            data: { name, email, password}
+        })
 
-    const user = await prisma.user.create({
-        data: { name, email, password}
-    })
+        return res.json(user)
+    } catch (error) {
+        console.log(error)
+        
+        return false
+    }
 
-    return res.json(user)
 })
 
-router.post('/getUser', async (req, res) => {
+router.post('/auth', async (req, res) => {
     const { name, password } = req.body
 
     const user = await prisma.user.findUnique({
@@ -21,12 +29,28 @@ router.post('/getUser', async (req, res) => {
             password: password
         },
         select: {
-            name: true,
-            password: true
+            name: true
         }
     })
 
-    return res.json(user)
+    if (user && req.session.profile) {
+        return true
+    
+    }else if(user && !req.session.profile){
+        req.session.profile = user.username
+        return true
+    
+    }else{
+        return false
+    }
+})
+
+router.get('/session', async (req, res) => {
+    if (req.session.id && req.session.profile) {
+        return true
+    }else{
+        return false
+    }
 })
 
 router.post("/createItem", async (req, res) => {
