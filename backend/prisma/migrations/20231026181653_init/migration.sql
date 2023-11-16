@@ -34,5 +34,3 @@ CREATE UNIQUE INDEX "User_password_key" ON "User"("password");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Item_title_key" ON "Item"("title");
-
-INSERT INTO User (email, username, password, is_Admin) VALUES ("admintinder@gmail.com", "admin", "senha123", "TRUE")

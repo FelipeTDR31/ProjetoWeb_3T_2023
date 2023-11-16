@@ -1,0 +1,89 @@
+*{
+  padding: 0;
+  margin: 0;
+}
+
+.globalNavigation{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100vw;
+  padding: 0.7rem 0;
+  border-bottom: 3px solid black;
+}
+
+.userInfo{
+  display: flex;
+  gap: 10px;
+  margin-right: 10px;
+  section {
+    font-weight: bold;
+    font-size: 1.2rem;
+    :first-child {
+      color: rgb(41, 41, 41);
+    }
+    span {
+      display: block;
+    }
+  }
+  button {
+    appearance: none;
+    background-color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    width: 6rem;
+    border-radius: 0.6rem;
+    border: none;
+    border-bottom: rgb(175, 175, 175) solid 3px;
+    border-right: rgb(175, 175, 175) solid 3px;
+    &:hover {
+      background-color: rgb(231, 231, 231);
+      border-bottom: rgb(126, 126, 126) solid 3px;
+      border-right: rgb(126, 126, 126) solid 3px;
+      cursor: pointer;
+    }
+  }
+}
+
+.items{
+  padding: 15px;
+  border: gray solid 5px;
+  background-color: lightgray;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20vw;
+  form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    .itemImp {
+      appearance: none;
+      width: 50%;
+      background-color: rgba(128, 128, 128, 0.712);
+      &::placeholder {
+        color: rgba(0, 0, 0, 0.74);
+      }
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      color: black;
+      padding: 5px;
+    }
+    button {
+      appearance: none;
+      width: 40%;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 3px;
+      &:hover {
+        cursor: pointer;
+        background-color: gray;
+      }
+    }
+  }
+}
