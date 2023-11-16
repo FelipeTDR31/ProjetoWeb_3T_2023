@@ -87,3 +87,22 @@
     }
   }
 }
+
+.itemsContainer{
+  display: flex;
+  width: 100vw;
+  justify-content: space-between;
+}
+
+.ranking {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-right: 80px;
+}
+
+.rankItemContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

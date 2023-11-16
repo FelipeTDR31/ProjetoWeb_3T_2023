@@ -4,6 +4,7 @@ import '../styles/globals.scss'
 import React, { useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import ItemEdit from './items/itemEdit'
+import ItemRank from './items/itemRank'
 
 export default function AdminPage({username, email} : {username: string, email: string}) {
     type itemInfo = {
@@ -12,7 +13,7 @@ export default function AdminPage({username, email} : {username: string, email: 
         image : string
     }
 
-    const [rankItems, setRankItems] = React.useState([])
+    const [rankItems, setRankItems] = React.useState<React.ReactElement[]>([])
     const [items, setItems] = React.useState<itemInfo[]>([])
     const [editItems, setEditItems] = React.useState<React.ReactElement[]>([])
     const [numberOfItems, setNumberOfItems] = React.useState<number>(0)
@@ -44,22 +45,31 @@ export default function AdminPage({username, email} : {username: string, email: 
             .then(res => res.json())
             .then(data => setItems(data))
 
-            if (editItems.length != numberOfItems) {
-                let num = items.length-1
+            if (editItems.length != numberOfItems && items.length == numberOfItems) {
+                let num = numberOfItems-1
                 console.log(numberOfItems)
                 let component = <ItemEdit id={items[num].id} title={items[num].title} image={items[num].image} />
+                let component2 = <ItemRank id={items[num].id} title={items[num].title} image={items[num].image} />
                 let array = editItems
+                let array2 = rankItems
                 array.push(component)
+                array2.push(component2)
                 setEditItems(array)
+                setRankItems(array2)
                 setNumberOfItems(editItems.length)
             }else if ( items.length != numberOfItems && editItems.length == numberOfItems) {
                 for (let i = 0; i < (items.length); i++) {
                     const item = items[i];
                     console.log(item)
                     let component = <ItemEdit id={item.id} title={item.title} image={item.image} />
+                    let component2 = <ItemRank id={item.id} title={item.title} image={item.image} />
                     let array = editItems
+                    let array2 = rankItems
+
                     array.push(component)
+                    array2.push(component2)
                     setEditItems(array)
+                    setRankItems(array2)
                 }
                 
 
@@ -90,6 +100,8 @@ export default function AdminPage({username, email} : {username: string, email: 
                 setNumberOfItems(newNumber)
             })
         
+            itemTitle = ""
+            itemImage = ""
     }
 
     return(
@@ -105,28 +117,42 @@ export default function AdminPage({username, email} : {username: string, email: 
                 </div>
             </nav>
 
-            <section className="items">
-                <form id='formTest' method='post' encType='multipart/form-data'>
-                    <input className='itemImp' type="text" placeholder="Título do Item" name="title" id='title'  />
-                    <input className='itemImp' type="text" placeholder="Link da imagem" name="image" id='image'  />
-                    <button type="button" onClick={createItem}>Criar Item</button>
-                </form>
+            <section className='itemsContainer'>
+                <div className="items">
+                    <form id='formTest' method='post' encType='multipart/form-data'>
+                        <input className='itemImp' type="text" placeholder="Título do Item" name="title" id='title'  />
+                        <input className='itemImp' type="text" placeholder="Link da imagem" name="image" id='image'  />
+                        <button type="button" onClick={createItem}>Criar Item</button>
+                    </form>
 
-                <div className='editableItems'>
-                    {
-                        editItems.map((editItem, key) => {
+                    <div className='editableItems'>
+                        {
+                            editItems.map((editItem, key) => {
 
-                            return (
-                                <div key={key} className='editItemContainer'>
-                                    {editItem}
-                                </div>
-                            )
-                        })
-                    }
+                                return (
+                                    <div key={key} className='editItemContainer'>
+                                        {editItem}
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                </div>
+
+                <div className="ranking">
+                    <h1>Ranking dos Itens</h1>
+                        {
+                            rankItems.map((rankItem, key) => {
+
+                                return (
+                                    <div key={key} className='rankItemContainer'>
+                                        {rankItem}
+                                    </div>
+                                )
+                            })
+                        }
                 </div>
             </section>
-
-            <section className="ranking"></section>
         </main>
     )
 }

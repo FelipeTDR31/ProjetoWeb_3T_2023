@@ -1,11 +1,13 @@
 'use client'
 
+import Image from 'next/image'
+
+
 export default function ItemRank({id, title, image} : {id: number,title: string, image: string}) {
     return(
-        <div>
-            <button type="button" className="deleteItem">X</button>
-            <img src={`../images/${image}`} alt={`${title}`} />
-            <h4>{title} - <img className="" src="../images/edit.png" alt="edit" /></h4>
-        </div>
+        <>
+            <Image src={image} alt={title} width={180} height={180} />
+            <span>Ranking: 0</span>
+        </>
     )
 }

@@ -74,7 +74,7 @@ router.post("/createItem", auth,  async (req, res) => {
     return res.json(newItem)
 })
 
-router.post('/deleteItem', async (req, res) => {
+router.post('/deleteItem', auth, async (req, res) => {
     const { id } = req.body
 
     const deleteItem = await prisma.item.delete({
