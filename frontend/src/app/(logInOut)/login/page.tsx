@@ -1,4 +1,7 @@
 'use client'
+
+import '../../styles/globals.scss'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 export default function Home() {
@@ -9,31 +12,47 @@ export default function Home() {
       let username= inputs[0].value
       let password = inputs[1].value
 
-      const user = await fetch("http://localhost:4000/auth", {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({username, password})
-    })
-      const json = await user.json()
-      console.log(json)
-      document.cookie = `token=${json.jwtToken}; Path=/; Secure; SameSite=Strict;`
-      router.push(`../../${json.user.username}`)
+      if (username !="" && password !="") {
+        const user = await fetch("http://localhost:4000/auth", {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({username, password})
+        })
+        const json = await user.json()
+        if (json.error == true) {
+          alert("Usuário ou senha incorretos")
+        }else {
+          console.log(json)
+          document.cookie = `token=${json.jwtToken}; Path=/; Secure; SameSite=Strict;`
+          router.push(`../../${json.user.username}`)
+        }
+      }
     }
 
   return (
-    <section>
-      <div className='userLog'>
-        <h1 className='title'>Rate Languages</h1>
-        <form target=''>
-          <input className='userInp' type="text" id='userName' name='userName' placeholder='Name' />
-          <input className='userInp' type="password" id='userPass' name='userPass' placeholder='Senha' />
+    <>
+        <nav className='globalNavigation'>
+          <h3 style={{cursor:"pointer"}} onClick={() => router.push("/")}>Rate Programming Languages</h3>
+          <div className='navLinksContainer'>
+            <Link className='navLinks' href="/register" >Registrar-se</Link>
+            <Link className='navLinks' href="/login">Entrar</Link>
+          </div>
+        </nav>
 
-          <button type="button" onClick={login}>Enviar</button>
-          <p className='test'></p>
-        </form>
-      </div>
-    </section>
+      <section>
+        <div className='userLog'>
+          <h1 className='title'>Login</h1>
+          <form target=''>
+            <input className='userInp' type="text" id='userName' name='userName' placeholder='Name' />
+            <input className='userInp' type="password" id='userPass' name='userPass' placeholder='Senha' />
+
+            <button type="button" onClick={login}>Entrar</button>
+            <p className='test'></p>
+          </form>
+        </div>
+      </section>
+    </>
   )
 }

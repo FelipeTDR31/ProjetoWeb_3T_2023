@@ -8,14 +8,7 @@ export default function logLayout({
   }) {
    return(
     <>
-        <main>
-            <img src="" alt="" />
-        </main>
-
-        <aside>
-            {children}
-        </aside>
-        
+        {children}
     </>
    )
 }

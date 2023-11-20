@@ -9,18 +9,105 @@
   align-items: center;
   width: 100vw;
   padding: 0.7rem 0;
-  border-bottom: 3px solid black;
+  border-bottom: 3px solid blue;
+}
+
+.presentation {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.navLinksContainer {
+  display: flex;
+  width: 15vw;
+  gap: 20px;
+  .navLinks {
+    text-decoration: none;
+    color: black;
+    background-color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 15px;
+    border-radius: 0.6rem;
+    border: none;
+    border-bottom: rgb(175, 175, 175) solid 3px;
+    border-right: rgb(175, 175, 175) solid 3px;
+    &:hover {
+      background-color: rgb(231, 231, 231);
+      border-bottom: rgb(126, 126, 126) solid 3px;
+      border-right: rgb(126, 126, 126) solid 3px;
+      cursor: pointer;
+    }
+  }
+}
+
+.userLog{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  position: relative;
+  top: 15vh;
+  .title {
+    background-color: lightgray;
+    border: 10px solid lightgray;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    width: 275px;
+    text-align: center;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    border: 6px solid lightgray;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding: 15px;
+    .userInp {
+      appearance: none;
+      border: none;
+      padding: 5px;
+      border-radius: 20px;
+      background-color: lightgray;
+      font-size: 1.2rem;
+    }
+    button {
+      appearance: none;
+      font-size: 1.2rem;
+      padding: 10px 30px;
+      letter-spacing: 1px;
+      font-weight: bold;
+      border-radius: 0.6rem;
+      border: none;
+      border-bottom: rgb(175, 175, 175) solid 3px;
+      border-right: rgb(175, 175, 175) solid 3px;
+      &:hover {
+        background-color: rgb(231, 231, 231);
+        border-bottom: rgb(126, 126, 126) solid 3px;
+        border-right: rgb(126, 126, 126) solid 3px;
+        cursor: pointer;
+      }
+    }
+  }
 }
 
 .userInfo{
   display: flex;
   gap: 10px;
   margin-right: 10px;
+  color: blue;
   section {
     font-weight: bold;
     font-size: 1.2rem;
     :first-child {
-      color: rgb(41, 41, 41);
+      color: rgba(16, 4, 185, 0.616);
     }
     span {
       display: block;
@@ -47,13 +134,14 @@
 
 .items{
   padding: 15px;
-  border: gray solid 5px;
+  border: rgba(16, 4, 185, 0.616) solid 5px;
   background-color: lightgray;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 20vw;
+  gap: 15px;
   form {
     width: 100%;
     display: flex;
@@ -92,6 +180,62 @@
   display: flex;
   width: 100vw;
   justify-content: space-between;
+  margin-top: 20px;
+}
+
+.rankItemContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  span {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+}
+
+.editableItems{
+  display: flex;
+  width: 80%;
+  overflow-x: auto;
+  gap: 10px;
+  border-radius: 20px;
+  border: rgba(16, 4, 185, 0.616) solid 5px;
+  &::-webkit-scrollbar {
+    appearance: none;
+    height: 15px;
+    margin-bottom: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    width: 50px;
+    background-color: rgba(0, 0, 0, 0.61);
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .editItemContainer {
+    background-color: rgba(138, 138, 138, 0.671);
+    border-radius: 20px;
+    margin: 10px;
+    padding: 10px;
+    .deleteItem {
+      appearance: none;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border: none;
+      border-radius: 100%;
+      background-color: lightblue;
+      position: relative;
+      left: 80px;
+      &:hover {
+        background-color: rgb(0, 168, 224);
+        cursor: pointer;
+      }
+    }
+  }
 }
 
 .ranking {
@@ -99,10 +243,24 @@
   flex-direction: column;
   gap: 15px;
   margin-right: 80px;
+  align-items: center;
 }
 
-.rankItemContainer {
+.rankItems {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  height: 80vh;
+  overflow-y: auto;
+  gap: 15px;
+  border: rgba(138, 138, 138, 0.445) solid 5px;
+  border-radius: 20px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  .rankItemContainer{
+    background-color: rgba(138, 138, 138, 0.445);
+    padding: 40px 15px;
+    border-radius: 20px;
+    margin: 20px;
+  }
 }

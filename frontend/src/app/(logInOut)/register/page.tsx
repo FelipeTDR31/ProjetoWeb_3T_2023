@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 export default function Home() {
@@ -10,26 +11,43 @@ export default function Home() {
       let email=inputs[1].value
       let is_Admin=false
       let password
-      if (inputs[2].value==inputs[3].value) {
-        password = inputs[2].value
+      if (username !="" && email !="" && email.includes("@aluno.feliz.ifrs.edu.br")) {
+          if (inputs[2].value==inputs[3].value && inputs[2].value!="" && inputs[3].value!="") {
+            password = inputs[2].value
+
+            const user = await fetch("http://localhost:4000/register", {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                },
+                body: JSON.stringify({username, email, password, is_Admin})
+            })
+              const json = await user.json()
+              
+              if (!json.exists) {
+                router.push(`/${json.username}`)
+              }else{
+                alert("Nome de usuário ou email já existentes")
+              }
+          }
+        }else{
+          alert("Informações inválidas. O email deve ser do domínio @aluno.feliz.ifrs.edu.br")
+        }
       }
-      const user = await fetch("http://localhost:4000/register", {
-        method: 'POST',
-        headers: {
-            'Content-type': 'application/json',
-        },
-        body: JSON.stringify({username, email, password, is_Admin})
-    })
-      const json = await user.json()
-      console.log(json)
-      
-      router.push(`/${json.username}`)
-    }
 
   return (
-    <section>
+    <>
+      <nav className='globalNavigation'>
+        <h3 style={{cursor:"pointer"}} onClick={() => router.push("/")}>Rate Programming Languages</h3>
+        <div className='navLinksContainer'>
+          <Link className='navLinks' href="/register" >Registrar-se</Link>
+          <Link className='navLinks' href="/login">Entrar</Link>
+        </div>
+      </nav>
+
+      
       <div className='userLog'>
-        <h1 className='title'>Rate Languages</h1>
+        <h1 className='title'>Criar Conta</h1>
         <form target=''>
           <input className='userInp' type="text" id='userName' name='userName' placeholder='Name' />
           <input className='userInp' type="email" id='userEmail' name='userEmail' placeholder='E-mail' />
@@ -39,6 +57,7 @@ export default function Home() {
           <button type="submit" onClick={createUser}>Enviar</button>
         </form>
       </div>
-    </section>
+      
+    </>
   )
 }

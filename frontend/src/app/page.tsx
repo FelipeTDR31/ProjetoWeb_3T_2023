@@ -1,18 +1,24 @@
 'use client'
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import './styles/globals.scss'
+
 
 export default function Home() {
+  const router = useRouter()
     
   return (
       <>
-        <nav>
-          <h3>Rate Programming Languages</h3>
-          <Link href="/register">Registrar-se</Link>
-          <Link href="/login">Entrar</Link>
+        <nav className='globalNavigation'>
+          <h3 style={{cursor:"pointer"}} onClick={() => router.push("/")}>Rate Programming Languages</h3>
+          <div className='navLinksContainer'>
+            <Link className='navLinks' href="/register" >Registrar-se</Link>
+            <Link className='navLinks' href="/login">Entrar</Link>
+          </div>
         </nav>
         
-        <main>
+        <main className='presentation'>
             <p>
               Descrição do Trabalho:
 
