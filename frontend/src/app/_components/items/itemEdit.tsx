@@ -7,11 +7,11 @@ const imageLoader = ({ src } : { src : string }) => {
     return `http://localhost:4000/uploads/${src}`;
   };
 
-export default function ItemEdit({id, title, imageName} : {id: number, title: string, imageName : string}) {
+export default function ItemEdit({id, title, imageName, deleteItem} : {id: number, title: string, imageName : string, deleteItem: any}) {
     
     return(
         <>
-            <button type="button" className="deleteItem">X</button>
+            <input type="button" className="deleteItem" id={id.toString()} name={title} value="X" onClick={deleteItem} />
             <Image loader={imageLoader} src={imageName} alt={title} width={100} height={100} />
             <h4>{title} - <Image src={editImage} alt="edit" width={20} height={20} style={{cursor: "pointer"}} /></h4>
         </>

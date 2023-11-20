@@ -93,6 +93,21 @@ router.post('/getUser', async (req,res) => {
 
 router.post("/createItem", auth,  async (req, res) => {
     const { title, image } = req.body
+
+    const verify = await prisma.item.findUnique({
+        where: {
+            title: title
+        },
+        select: {
+            title: true
+        }
+    })
+
+    if (verify != null) {
+        return res.json({ exists : true})
+        
+    }
+
     const imageResponse = await fetch(image)
     const imageBuffer = await imageResponse.arrayBuffer()
     const buffer = Buffer.from(imageBuffer)
@@ -115,24 +130,11 @@ router.post("/createItem", auth,  async (req, res) => {
     const imageFilePath = `${imageFolder}/${uniqueFilename}`
     fs.writeFileSync(imageFilePath, buffer)
 
-    const verify = await prisma.item.findUnique({
-        where: {
-            title: title
-        },
-        select: {
-            title: true
-        }
+    const imagePathBD = `uploads/${uniqueFilename}`
+    const newItem = await prisma.item.create({
+        data: { title : title, image : imagePathBD }
     })
-
-    if (verify == null) {
-        const imagePathBD = `uploads/${uniqueFilename}`
-        const newItem = await prisma.item.create({
-            data: { title : title, image : imagePathBD }
-        })
-        return res.json(newItem)
-    }else {
-        return res.json({ exists : true})
-    }
+    return res.json(newItem)
 })
 
 router.get('/uploads/:imageName', async (req, res) => {
@@ -147,23 +149,30 @@ router.get('/uploads/:imageName', async (req, res) => {
         }
     })
 
-    const filePath = `${item.image}`
+    if (item.image==null || item==null) {
+        return res.json({error : true})
+    }else{
+        const filePath = `${item.image}`
+        res.sendFile(path.resolve(filePath))
+    }
 
-    res.sendFile(path.resolve(filePath))
+    
 })
 
 router.post('/deleteItem', auth, async (req, res) => {
-    const { id } = req.body
+    const { id, title } = req.body
 
     const deleteItem = await prisma.item.delete({
         where : {
-            id : id
+            title : title
         },
         select : {
-            title : true
+            title : true,
+            image: true
         }
     })
-
+    const path = deleteItem.image
+    fs.unlink(path, (error) => {console.log(error)})
     return res.json(deleteItem)
 })
 

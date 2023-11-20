@@ -35,6 +35,32 @@ export default function AdminPage({username, email} : {username: string, email: 
         } return null;
     }
 
+    async function deleteItem(e: React.FormEvent<HTMLInputElement>) {
+        const token = getCookie("token")
+        const itemID = Number(e.currentTarget.id)
+        const itemTitle = e.currentTarget.name
+        fetch("http://localhost:4000/deleteItem", {
+            method : "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({id : itemID, title: itemTitle})
+        })
+        .then(res => res.json())
+        .then(data => {
+            const newEditItems = editItems.filter(item => item.props.title!=data.title)
+            const newRankItems = rankItems.filter(itemRank => itemRank.props.title!=data.title)
+            setEditItems(newEditItems)
+            setRankItems(newRankItems)
+            console.log(newEditItems)
+            console.log(numberOfItems)
+            let newNumberOfItems = newEditItems.length
+            console.log(newNumberOfItems)
+            setNumberOfItems(newNumberOfItems)
+        })
+    }
+
         useEffect(() => {
             fetch("http://localhost:4000/getAllItems", {
                 method: 'GET',
@@ -48,8 +74,7 @@ export default function AdminPage({username, email} : {username: string, email: 
             if (editItems.length != numberOfItems && items.length == numberOfItems) {
                 let num = numberOfItems-1
                 const imageName = items[num].image.split("/")[1]
-                console.log(numberOfItems)
-                let component = <ItemEdit id={items[num].id} title={items[num].title} imageName={imageName} />
+                let component = <ItemEdit id={items[num].id} title={items[num].title} imageName={imageName} deleteItem={deleteItem} />
                 let component2 = <ItemRank id={items[num].id} title={items[num].title} imageName={imageName} />
                 let array = editItems
                 let array2 = rankItems
@@ -58,12 +83,16 @@ export default function AdminPage({username, email} : {username: string, email: 
                 setEditItems(array)
                 setRankItems(array2)
                 setNumberOfItems(editItems.length)
-            }else if ( items.length != numberOfItems && editItems.length == numberOfItems) {
+            }else if ( items.length != numberOfItems && (items.length)>=(numberOfItems+1) && items.length && editItems.length == numberOfItems) {
+                console.log("LOOOP")
+                console.log(items.length)
+                console.log(numberOfItems)
+                console.log("____________")
                 for (let i = 0; i < (items.length); i++) {
                     const item = items[i];
                     const imageName = item.image.split("/")[1]
                     console.log(item)
-                    let component = <ItemEdit id={item.id} title={item.title} imageName={imageName} />
+                    let component = <ItemEdit id={item.id} title={item.title} imageName={imageName} deleteItem={deleteItem} />
                     let component2 = <ItemRank id={item.id} title={item.title} imageName={imageName} />
                     let array = editItems
                     let array2 = rankItems
@@ -75,7 +104,7 @@ export default function AdminPage({username, email} : {username: string, email: 
                 }
                 
 
-                setNumberOfItems(editItems.length)
+                setNumberOfItems(items.length)
 
             }
         })
@@ -87,26 +116,34 @@ export default function AdminPage({username, email} : {username: string, email: 
         let itemImage = itemImps[1].value
         
         if (itemImage != "" && itemTitle != "" && itemImage.includes('png') || itemImage.includes('jpeg') || itemImage.includes('jpg')) {
-            fetch("http://localhost:4000/createItem", {
-            method : "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({title : itemTitle, image : itemImage})
-            })
-            .then((res) => res.json())
-            .then((data) => {
-                if (!data.exists) {
-                    let newNumber = numberOfItems + 1
-                    setNumberOfItems(newNumber)
-                }else {
-                    alert("Item já existe")
-                }
-            })
-            
+
+            if (itemImage.includes("data:") || itemImage.includes('https://') || itemImage.includes('http://')) {
+                fetch("http://localhost:4000/createItem", {
+                method : "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({title : itemTitle, image : itemImage})
+                })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.exists) {
+                        alert("Item já existe")
+                    }else {
+                        let newNumber = numberOfItems + 1
+                        setNumberOfItems(newNumber)
+                        setEditItems([...editItems, <ItemEdit id={data.id} title={data.title} imageName={data.image.split("/")[1]} deleteItem={deleteItem} />])
+                        setRankItems([...rankItems, <ItemRank id={data.id} title={data.title} imageName={data.image.split("/")[1]} />])
+                        
+                    }
+                })
+                
+            }
         }
     }
+
+    
 
     return(
         <main>

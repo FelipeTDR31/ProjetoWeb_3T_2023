@@ -55,9 +55,9 @@ O sistema deve possuir dois papéis para as pessoas que vão o utilizar com perm
 - [ ] Ordenar de forma crescente ou decrescente os rankings de classificações
 
 #### Gerente
-- [ ] A pessoa que será gerente deve ser cadastrada no banco previamente (user: admin e password: senha123)
-- [ ] Fazer login e logout no sistema
-- [ ] Visualizar ranking dos itens classificados
+- [x] A pessoa que será gerente deve ser cadastrada no banco previamente (user: admin e password: senha123)
+- [x] Fazer login e logout no sistema
+- [x] Visualizar ranking dos itens classificados
 - [ ] Ordenar de forma crescente ou decrescente o ranking de classificações
 - [ ] Listar, adicionar, editar e excluir itens
 
@@ -65,9 +65,9 @@ O sistema deve possuir dois papéis para as pessoas que vão o utilizar com perm
 Abaixo são especificadas regras que incidem sobre o usuo do sistema:
 - [ ] A pessoa usuária não pode alterar seu e-mail
 - [ ] O e-mail da pessoa usuária deve ser do domínio @aluno.feliz.ifrs.edu.br
-- [ ] Um item consiste em uma imagem de algo
+- [x] Um item consiste em uma imagem de algo
 - [ ] O ranking deve ser ordenado pelo número de avaliações positivas ou negativas
-- [ ] O sistema deve iniciar com pelo menos 15 itens cadastrados
+- [x] O sistema deve iniciar com pelo menos 15 itens cadastrados
 - [ ] Uma pessoa só pode votar uma vez em cada item
 
 ### Instruções fundamentais
