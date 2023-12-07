@@ -218,7 +218,7 @@ router.get('/getAllItems', async (req, res) => {
 
     const itemsRating = await prisma.user_Item.groupBy({
         by: ['itemID'],
-        _count:{
+        _sum:{
             likeQuantity: true,
             dislikeQuantity: true
         }
@@ -226,7 +226,7 @@ router.get('/getAllItems', async (req, res) => {
     let ratings=[]
     for (let i = 0; i < itemsRating.length; i++) {
         const itemRating = itemsRating[i];
-        const rating = itemRating._count.likeQuantity - itemRating._count.dislikeQuantity
+        const rating = itemRating._sum.likeQuantity - itemRating._sum.dislikeQuantity
         if (typeof rating === 'number') {
             ratings.push(rating)
         }else{
@@ -309,6 +309,54 @@ router.post('/getItemRanking', async (req, res) => {
         return res.json({rankingNumber: ranking})
     }else {
         return res.json({error: true})
+    }
+})
+
+router.post("/voteItem", async (req, res) =>{
+    const {username, itemID, type} = req.body
+
+    const user =await prisma.user.findUnique({
+        where:{
+            username: username
+        },
+        select:{
+            id: true,
+            username: true,
+            email: true,
+            is_Admin: true
+        }
+    })
+
+    if (type == "like") {
+        const user_item =await prisma.user_Item.create({
+            data:{
+                userID: user.id,
+                itemID: Number(itemID),
+                likeQuantity: 1,
+                dislikeQuantity: 0
+            }
+        })
+
+        if (user_item != null) {
+            return res.json({error: false})
+        }else {
+            return res.json({error: true})
+        }
+    }else if (type == "dislike") {
+        const user_item =await prisma.user_Item.create({
+            data:{
+                userID: user.id,
+                itemID: Number(itemID),
+                likeQuantity: 0,
+                dislikeQuantity: 1
+            }
+        })
+
+        if (user_item != null) {
+            return res.json({error: false})
+        }else {
+            return res.json({error: true})
+        }
     }
 })
 

@@ -302,3 +302,23 @@
     background-color: rgb(148, 148, 148);
   }
 }
+
+.voteBtnsContainer{
+  display: flex;
+  gap: 15px;
+  button{
+    appearance: none;
+    border: none;
+    font-weight: bold;
+    font-size: 1.5rem;
+    border-radius: 20px;
+    width: 150px;
+    height: 50px;
+    padding: 10px 15px;
+    background-color: gray;
+    cursor: pointer;
+    &:hover{
+      background-color: rgb(148, 148, 148);
+    }
+  }
+}
