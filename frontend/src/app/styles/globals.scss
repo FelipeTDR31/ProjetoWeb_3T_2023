@@ -268,3 +268,37 @@
 .imageEdit{
   border: black solid 3px;
 }
+
+.classifiedItems{
+  display: flex;
+}
+.classifiedContainer{
+  justify-content: center;
+  .classified{
+    width: 10vw;
+    height: 60vh;
+    align-items: center;
+    img{
+      width: 100px;
+      height: 100px;
+    }
+  }
+}
+
+.voteBtn{
+  appearance: none;
+  border: none;
+  font-weight: bold;
+  font-size: 1.5rem;
+  border-radius: 20px;
+  width: 200px;
+  height: 50px;
+  padding: 10px 15px;
+  background-color: gray;
+  position: absolute;
+  left: 60vw;
+  cursor: pointer;
+  &:hover{
+    background-color: rgb(148, 148, 148);
+  }
+}

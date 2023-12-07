@@ -72,62 +72,66 @@ export default function UserPage({username, email, password} : {username: string
                 </div>
             </nav>
 
-            <div className="ranking">
-                    <h1>Ranking dos Itens</h1>
-                    <div className='rankItems'>
-                        {
-                            rankItems.map((rankItem, key) => {
+            <section className='classifiedItems'>
+                <div className="ranking classifiedContainer">
+                        <h1>itens mais queridos</h1>
+                        <div className='rankItems classified'>
+                            {
+                                rankItems.map((rankItem, key) => {
 
-                                return (
-                                    <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                                        <div key={key} className='rankItemContainer'>
-                                            {rankItem}
+                                    return (
+                                        <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                                            <div key={key} className='rankItemContainer'>
+                                                {rankItem}
+                                            </div>
+                                            <span>____________________________</span>
                                         </div>
-                                        <span>____________________________</span>
-                                    </div>
-                                )
-                            })
-                        }
+                                    )
+                                })
+                            }
+                        </div>
                     </div>
-                </div>
-
-            <div className="ranking">
-                    <h1>Ranking dos Itens</h1>
-                    <div className='rankItems'>
-                        {
-                            rankItems.map((rankItem, key) => {
-
-                                return (
-                                    <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                                        <div key={key} className='rankItemContainer'>
-                                            {rankItem}
-                                        </div>
-                                        <span>____________________________</span>
-                                    </div>
-                                )
-                            })
-                        }
-                    </div>
-                </div>
 
                 <div className="ranking">
-                    <h1>Ranking dos Itens</h1>
-                    <div className='rankItems'>
-                        {
-                            rankItems.map((rankItem, key) => {
+                        <h1>Ranking dos Itens</h1>
+                        <div className='rankItems'>
+                            {
+                                rankItems.map((rankItem, key) => {
 
-                                return (
-                                    <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                                        <div key={key} className='rankItemContainer'>
-                                            {rankItem}
+                                    return (
+                                        <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                                            <div key={key} className='rankItemContainer'>
+                                                {rankItem}
+                                            </div>
+                                            <span>____________________________</span>
                                         </div>
-                                        <span>____________________________</span>
-                                    </div>
-                                )
-                            })
-                        }
+                                    )
+                                })
+                            }
+                        </div>
                     </div>
-                </div>
+
+                    <div className="ranking classifiedContainer">
+                        <h1>Itens menos queridos</h1>
+                        <div className='rankItems classified'>
+                            {
+                                rankItems.map((rankItem, key) => {
+
+                                    return (
+                                        <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                                            <div key={key} className='rankItemContainer'>
+                                                {rankItem}
+                                            </div>
+                                            <span>____________________________</span>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+
+                        <button className='voteBtn' type="button" onClick={() => {router.push(`../${username}/votes`)}}>IR VOTAR</button>
+                    </div>
+            </section>
         </main>
     )
 }
