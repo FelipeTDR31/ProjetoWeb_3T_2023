@@ -15,20 +15,22 @@ export default function Home() {
           if (inputs[2].value==inputs[3].value && inputs[2].value!="" && inputs[3].value!="") {
             password = inputs[2].value
 
-            const user = await fetch("http://localhost:4000/register", {
+            await fetch("http://localhost:4000/register", {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json',
                 },
                 body: JSON.stringify({username, email, password, is_Admin})
             })
-              const json = await user.json()
-              
-              if (!json.exists) {
-                router.push(`/${json.username}`)
-              }else{
+            .then(res => res.json())
+            .then(data => {
+              if (data.exists) {
                 alert("Nome de usuário ou email já existentes")
+              }else{
+                document.cookie = `token=${data.jwtToken}; Path=/; Secure; SameSite=Strict;`
+                router.push(`../../${data.user.username}`)
               }
+            })
           }
         }else{
           alert("Informações inválidas. O email deve ser do domínio @aluno.feliz.ifrs.edu.br")

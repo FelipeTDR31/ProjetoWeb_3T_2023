@@ -9,7 +9,7 @@ const router = Router()
 
 router.post('/register', async (req, res) => {
     const { username, email, password, is_Admin } = req.body
-    const verify = await prisma.user.findUnique({
+    const verify = await prisma.user.findFirst({
         where:{
             OR: [
                 {
@@ -29,8 +29,11 @@ router.post('/register', async (req, res) => {
         const user = await prisma.user.create({
             data: { username, email, password, is_Admin }
         })
+        const jwtToken = jwt.sign({profile : user.username}, "aqwdqwdeaqwdeqweqwe", {
+            expiresIn: "1d"
+        })
     
-        return res.json(user)
+        return res.json({user, jwtToken})
     }else{
         return res.json({exists: true})
     }
@@ -149,7 +152,7 @@ router.get('/uploads/:imageName', async (req, res) => {
         }
     })
 
-    if (item.image==null || item==null) {
+    if (item==null || item.image==null ) {
         return res.json({error : true})
     }else{
         const filePath = `${item.image}`
@@ -172,7 +175,7 @@ router.post('/deleteItem', auth, async (req, res) => {
         }
     })
     const path = deleteItem.image
-    fs.unlink(path, (error) => {console.log(error)})
+    fs.unlinkSync(path, (error) => {console.log(error)})
     return res.json(deleteItem)
 })
 
@@ -213,7 +216,100 @@ router.get('/getAllItems', async (req, res) => {
         }
     })
 
-    return res.json(items)
+    const itemsRating = await prisma.user_Item.groupBy({
+        by: ['itemID'],
+        _count:{
+            likeQuantity: true,
+            dislikeQuantity: true
+        }
+    })
+    let ratings=[]
+    for (let i = 0; i < itemsRating.length; i++) {
+        const itemRating = itemsRating[i];
+        const rating = itemRating._count.likeQuantity - itemRating._count.dislikeQuantity
+        if (typeof rating === 'number') {
+            ratings.push(rating)
+        }else{
+            ratings.push(0)
+        }
+    }
+    
+    return res.json({items, ratings})
+})
+
+router.post('/editItem', auth, async (req, res) => {
+    const { id, title, image } = req.body
+
+    const verify = await prisma.item.findUnique({
+        where: {
+            id : id
+        },
+        select: {
+            image : true
+        }
+    })
+
+    if (verify == null) {
+        return res.json({ notAnItem : true})
+        
+    }
+
+    const imageResponse = await fetch(image)
+    const imageBuffer = await imageResponse.arrayBuffer()
+    const buffer = Buffer.from(imageBuffer)
+    
+    const imageFolder = 'uploads'
+    if (!fs.existsSync(imageFolder)) {
+        fs.mkdirSync(imageFolder)
+    }
+
+    let extension
+    if (image.includes("png")) {
+        extension = 'png'
+    }else if (image.includes("jpeg")) {
+        extension = 'jpeg'
+    }else if (image.includes("jpg")) {
+        extension = 'jpg'
+    }
+
+    const uniqueFilename = `${title}_${Math.random().toString(36).substring(2, 7)}.${extension}`
+    const imageFilePath = `${imageFolder}/${uniqueFilename}`
+    fs.writeFileSync(imageFilePath, buffer)
+    fs.unlinkSync(verify.image)
+
+    const imagePathBD = `uploads/${uniqueFilename}`
+    const updateItem = await prisma.item.update({
+        where: {id: id},
+        data: { title : title, image : imagePathBD }
+    })
+    return res.json(updateItem)
+})
+
+router.post('/getItemRanking', async (req, res) => {
+    const {id} = req.body
+
+    const verify = await prisma.item.findUnique({
+        where: {id: id},
+        select: {title: true}
+    })
+
+    if (verify!=null) {
+        const itemRankSums = await prisma.user_Item.aggregate({
+            where:{
+                itemID : id
+            },
+            _sum:{
+                likeQuantity : true,
+                dislikeQuantity : true
+            }
+        })
+    
+        const ranking = itemRankSums._sum.likeQuantity- itemRankSums._sum.dislikeQuantity
+    
+        return res.json({rankingNumber: ranking})
+    }else {
+        return res.json({error: true})
+    }
 })
 
 export default router

@@ -13,21 +13,23 @@ export default function Home() {
       let password = inputs[1].value
 
       if (username !="" && password !="") {
-        const user = await fetch("http://localhost:4000/auth", {
+        fetch("http://localhost:4000/auth", {
           method: 'POST',
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({username, password})
         })
-        const json = await user.json()
-        if (json.error == true) {
-          alert("Usuário ou senha incorretos")
-        }else {
-          console.log(json)
-          document.cookie = `token=${json.jwtToken}; Path=/; Secure; SameSite=Strict;`
-          router.push(`../../${json.user.username}`)
-        }
+        .then(res => res.json())
+        .then(data => {
+          if (data.error == true) {
+            alert("Usuário ou senha incorretos")
+          }else {
+            document.cookie = `token=${data.jwtToken}; Path=/; Secure; SameSite=Strict;`
+            router.push(`../../${data.user.username}`)
+          }
+        })
+        
       }
     }
 

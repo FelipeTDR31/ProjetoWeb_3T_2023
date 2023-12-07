@@ -5,6 +5,8 @@ import React, { useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import ItemEdit from './items/itemEdit'
 import ItemRank from './items/itemRank'
+import EditItemForm from './editItemForm'
+import ReactDOM from 'react-dom'
 
 export default function AdminPage({username, email} : {username: string, email: string}) {
     type itemInfo = {
@@ -51,10 +53,9 @@ export default function AdminPage({username, email} : {username: string, email: 
         .then(data => {
             const newEditItems = editItems.filter(item => item.props.title!=data.title)
             const newRankItems = rankItems.filter(itemRank => itemRank.props.title!=data.title)
+            console.log(numberOfItems)
             setEditItems(newEditItems)
             setRankItems(newRankItems)
-            console.log(newEditItems)
-            console.log(numberOfItems)
             let newNumberOfItems = newEditItems.length
             console.log(newNumberOfItems)
             setNumberOfItems(newNumberOfItems)
@@ -69,44 +70,45 @@ export default function AdminPage({username, email} : {username: string, email: 
                 }
             })
             .then(res => res.json())
-            .then(data => setItems(data))
-
-            if (editItems.length != numberOfItems && items.length == numberOfItems) {
-                let num = numberOfItems-1
-                const imageName = items[num].image.split("/")[1]
-                let component = <ItemEdit id={items[num].id} title={items[num].title} imageName={imageName} deleteItem={deleteItem} />
-                let component2 = <ItemRank id={items[num].id} title={items[num].title} imageName={imageName} />
-                let array = editItems
-                let array2 = rankItems
-                array.push(component)
-                array2.push(component2)
-                setEditItems(array)
-                setRankItems(array2)
-                setNumberOfItems(editItems.length)
-            }else if ( items.length != numberOfItems && (items.length)>=(numberOfItems+1) && items.length && editItems.length == numberOfItems) {
-                console.log("LOOOP")
-                console.log(items.length)
-                console.log(numberOfItems)
-                console.log("____________")
-                for (let i = 0; i < (items.length); i++) {
-                    const item = items[i];
-                    const imageName = item.image.split("/")[1]
-                    console.log(item)
-                    let component = <ItemEdit id={item.id} title={item.title} imageName={imageName} deleteItem={deleteItem} />
-                    let component2 = <ItemRank id={item.id} title={item.title} imageName={imageName} />
+            .then(data => {
+                if (editItems.length != numberOfItems && data.items.length == numberOfItems) {
+                    console.log("Adicionado")
+                    let num = numberOfItems-1
+                    const itemRating = data.ratings[num]
+                    const imageName = data.items[num].image.split("/")[1]
+                    let component = <ItemEdit id={data.items[num].id} title={data.items[num].title} imageName={imageName} deleteItem={deleteItem} editItemForm={<EditItemForm itemId={items[num].id.toString()} itemTitle={items[num].title} editItemInfo={editItemInfo} />} />
+                    let component2 = <ItemRank id={data.items[num].id} title={data.items[num].title} imageName={imageName} rating={itemRating} />
                     let array = editItems
                     let array2 = rankItems
-
                     array.push(component)
                     array2.push(component2)
                     setEditItems(array)
                     setRankItems(array2)
+                    setNumberOfItems(editItems.length)
+                }else if ( data.items.length != numberOfItems && (data.items.length)>(numberOfItems+1) && editItems.length == numberOfItems) {
+                    console.log("LOOOP")
+                    console.log(data.items.length)
+                    console.log(numberOfItems)
+                    console.log("____________")
+                    for (let i = 0; i < (data.items.length); i++) {
+                        const item = data.items[i]
+                        const itemRating = data.ratings[i]
+                        const imageName = item.image.split("/")[1]
+                        console.log(item)
+                        let component = <ItemEdit id={item.id} title={item.title} imageName={imageName} deleteItem={deleteItem} editItemForm={<EditItemForm itemId={item.id.toString()} itemTitle={item.title} editItemInfo={editItemInfo} />} />
+                        let component2 = <ItemRank id={item.id} title={item.title} imageName={imageName} rating={itemRating} />
+                        let array = editItems
+                        let array2 = rankItems
+    
+                        array.push(component)
+                        array2.push(component2)
+                        setEditItems(array)
+                        setRankItems(array2)
+                    }
+                    setNumberOfItems(data.items.length)
+    
                 }
-                
-
-                setNumberOfItems(items.length)
-
-            }
+            })
         })
 
     async function createItem() {
@@ -133,8 +135,8 @@ export default function AdminPage({username, email} : {username: string, email: 
                     }else {
                         let newNumber = numberOfItems + 1
                         setNumberOfItems(newNumber)
-                        setEditItems([...editItems, <ItemEdit id={data.id} title={data.title} imageName={data.image.split("/")[1]} deleteItem={deleteItem} />])
-                        setRankItems([...rankItems, <ItemRank id={data.id} title={data.title} imageName={data.image.split("/")[1]} />])
+                        setEditItems([...editItems, <ItemEdit id={data.id} title={data.title} imageName={data.image.split("/")[1]} deleteItem={deleteItem} editItemForm={<EditItemForm itemId={data.id} itemTitle={data.title} editItemInfo={editItemInfo} />} />])
+                        setRankItems([...rankItems, <ItemRank id={data.id} title={data.title} imageName={data.image.split("/")[1]} rating={0} />])
                         
                     }
                 })
@@ -143,7 +145,51 @@ export default function AdminPage({username, email} : {username: string, email: 
         }
     }
 
-    
+    async function editItemInfo() {
+        const token = getCookie("token")
+        let editItemInputs : NodeListOf<HTMLInputElement> = document.querySelectorAll('.edit')
+        let editForm : HTMLElement | null = document.querySelector(".editForm")
+
+        if (editItemInputs![0].value!= "" && editItemInputs![1].value != "" && editItemInputs![1].value.includes('png') || editItemInputs![1].value.includes('jpeg') || editItemInputs![1].value.includes('jpg')) {
+
+            if (editItemInputs![1].value.includes("data:") || editItemInputs![1].value.includes('https://') || editItemInputs![1].value.includes('http://')) {
+                fetch("http://localhost:4000/editItem", {
+                method : "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({id : Number(editForm!.id), title : editItemInputs![0].value, image : editItemInputs![1].value})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.notAnItem) {
+                        alert("Item não existe")
+                    }else{
+                        let itemIndex = 0
+                        let updatedItem1 = <ItemEdit id={data.id} title={data.title} imageName={data.image.split("/")[1]} deleteItem={deleteItem} editItemForm={<EditItemForm itemId={data.id} itemTitle={data.title} editItemInfo={editItemInfo} />} />
+                        let updatedItem2 = <ItemRank id={data.id} title={data.title} imageName={data.image.split("/")[1]} rating={0} />
+                        for (let i = 0; i < editItems.length; i++) {
+                            const editItem = editItems[i];
+                            if (editItem.props.id==updatedItem1.props.id) {
+                                itemIndex = editItems.indexOf(editItem)
+                            }
+                        }
+
+                        let newArray1 = [...editItems]
+                        let newArray2 = [...rankItems]
+                        newArray1[itemIndex] = updatedItem1
+                        newArray2[itemIndex] = updatedItem2
+
+                        setEditItems(newArray1)
+                        setRankItems(newArray2)
+                    }
+
+                    ReactDOM.unmountComponentAtNode(document.querySelector("#editFormContainer")!)
+                })
+            }
+        }
+    }
 
     return(
         <main>
@@ -179,6 +225,8 @@ export default function AdminPage({username, email} : {username: string, email: 
                             })
                         }
                     </div>
+
+                    <span id='editFormContainer'></span>
                 </div>
 
                 <div className="ranking">

@@ -19,7 +19,7 @@ export default function Page({params} : {params : {user : string}}) {
     })
 
     const router = useRouter()
-
+    let use=0
     function getCookie(cookieName: string){
         var cookiestring  = document.cookie;
         var cookiearray = cookiestring.split(';');
@@ -31,23 +31,28 @@ export default function Page({params} : {params : {user : string}}) {
     }
 
     useEffect(() =>{
-        const token = getCookie("token")
-        if (token !== null) {
-            let username = params.user
-            fetch("http://localhost:4000/getUser", {
-            method : 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
-                body: JSON.stringify({ username })
-            })
-            .then(res => res.json())
-            .then(data => setInfo(data))
+        if (use == 0) {
+            use = 1
+            const token = getCookie("token")
+            if (token !== null) {
+                let username = params.user
+                fetch("http://localhost:4000/getUser", {
+                method : 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                    body: JSON.stringify({ username })
+                })
+                .then(res => res.json())
+                .then(data => setInfo(data))
+                
+                
+            }else{
+                router.push("/login")
+            }
             
-            
-        }else{
-            router.push("/login")
         }
+
     })
 
     return(
