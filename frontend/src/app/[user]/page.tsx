@@ -44,8 +44,13 @@ export default function Page({params} : {params : {user : string}}) {
                     body: JSON.stringify({ username })
                 })
                 .then(res => res.json())
-                .then(data => setInfo(data))
-                
+                .then(data => {
+                    if (data.error) {
+                        router.push("/login")
+                    }else{
+                        setInfo(data)
+                    }
+                })
                 
             }else{
                 router.push("/login")
@@ -53,7 +58,7 @@ export default function Page({params} : {params : {user : string}}) {
             
         }
 
-    })
+    }, [])
 
     return(
         <>

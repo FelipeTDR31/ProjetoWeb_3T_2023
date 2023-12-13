@@ -2,6 +2,8 @@
 
 import React, { useEffect } from 'react'
 import ItemRank from './itemRank'
+import changeImg from "../../../../images/mudar.png"
+import Image from 'next/image'
 
 export default function UserNormalPage({changePage} : {changePage : any}) {
     type itemInfo = {
@@ -16,40 +18,55 @@ export default function UserNormalPage({changePage} : {changePage : any}) {
     const [items, setItems] = React.useState<itemInfo[]>([])
     const [numberOfItems, setNumberOfItems] = React.useState<number>(0)
 
-    let i = 0
     useEffect(() => {
-        if (i === 0) {
-            fetch("http://localhost:4000/getAllItems", {
-                method: 'GET',
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(res => res.json())
-            .then(data => setItems(data.items))
-            .then(() => {
-                if ( items.length != numberOfItems && (items.length)>(numberOfItems+1) && rankItems.length == numberOfItems) {
-                    console.log("LOOOP")
-                    console.log(items.length)
-                    console.log(numberOfItems)
-                    console.log("____________")
-                    for (let i = 0; i < (items.length); i++) {
-                        const item = items[i];
-                        const imageName = item.image.split("/")[1]
-                        console.log(item)
-                        let component = <ItemRank id={item.id} title={item.title} imageName={imageName} rating={0} />
-                        let array = rankItems
-                        array.push(component)
-                        setRankItems(array)
+        fetch("http://localhost:4000/getAllItems", {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            setItems(data.items)
+            if ( items.length != numberOfItems && (items.length)>(numberOfItems+1) && rankItems.length == numberOfItems) {
+                for (let i = 0; i < (items.length); i++) {
+                    const item = items[i];
+                    let rating = data.ratings[i]
+                    if (typeof rating != "number") {
+                        rating = 0
                     }
-                    setNumberOfItems(items.length)
-
+                    const imageName = item.image.split("/")[1]
+                    let component = <ItemRank id={item.id} title={item.title} imageName={imageName} rating={rating} showRating={true} />
+                    let array = rankItems
+                    array.push(component)
+                    setRankItems(array)
                 }
-            })
+                setNumberOfItems(items.length)
+                const topItems = rankItems
+                    .sort((a, b) => b.props.rating - a.props.rating) // Sort items by rating (highest first)
+                    .slice(0, 5); // Get the top 5 items
+                setLikedItems(topItems)
 
+                const bottomItems = rankItems
+                    .sort((a, b) => a.props.rating - b.props.rating) // Sort items by rating (lowest first)
+                    .slice(0, 5); // Get the bottom 5 items
+                setDislikedItems(bottomItems)
 
-        }
+                const ascItems = rankItems
+                    .sort((a, b) => b.props.rating - a.props.rating) // Sort items by rating (highest first)
+                setRankItems(ascItems)
+            }
+        })
     })
+
+    function changeOrder() {
+        let containers = document.querySelectorAll(".rankItems")
+            if (containers[1].classList.contains("invert")) {
+                containers[1].classList.remove("invert")
+            }else{
+                containers[1].classList.add("invert")
+            }
+    }
 
     return (
         <section className='classifiedItems'>
@@ -57,7 +74,7 @@ export default function UserNormalPage({changePage} : {changePage : any}) {
                     <h1>itens mais queridos</h1>
                     <div className='rankItems classified'>
                         {
-                            rankItems.map((rankItem, key) => {
+                            likedItems.map((rankItem, key) => {
 
                                 return (
                                     <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
@@ -73,7 +90,7 @@ export default function UserNormalPage({changePage} : {changePage : any}) {
                 </div>
 
             <div className="ranking">
-                    <h1>Ranking dos Itens</h1>
+                    <h1>Ranking dos Itens - <Image onClick={changeOrder} src={changeImg} alt={'changeIMG'} width={30} height={30} style={{cursor:"pointer"}} /></h1>
                     <div className='rankItems'>
                         {
                             rankItems.map((rankItem, key) => {
@@ -95,7 +112,7 @@ export default function UserNormalPage({changePage} : {changePage : any}) {
                     <h1>Itens menos queridos</h1>
                     <div className='rankItems classified'>
                         {
-                            rankItems.map((rankItem, key) => {
+                            dislikedItems.map((rankItem, key) => {
 
                                 return (
                                     <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>

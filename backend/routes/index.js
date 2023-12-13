@@ -39,17 +39,47 @@ router.post('/register', async (req, res) => {
     }
 })
 
-router.post('/getAllUsers', async (req, res) => {
-    const users = await prisma.user.findMany({
-        select:{
-            username:true,
-            email:true,
-            password:true,
-            is_Admin:true
-        }
-    })
+router.post('/editUser', async (req, res) => {
+    const {username, newUsername, password, newPassword} = req.body
 
-    return res.json(users)
+    if (username!=undefined && newUsername!=undefined) {
+        const verify = await prisma.user.findUnique({
+            where: {username: username},
+            select : {username: true}
+        })
+
+        const verify2 = await prisma.user.findUnique({
+            where: {username: newUsername},
+            select : {username: true}
+        })
+
+        if (verify!=null && verify2==null) {
+            const user = await prisma.user.update({
+                where:{
+                    username: username
+                },
+                data:{username: newUsername}
+            })
+        }else {
+            return res.json({error: true})
+        }
+    }else if(password!=undefined && newPassword!=undefined) {
+        const verify = await prisma.user.findUnique({
+            where: {username: username},
+            select : {username: true}
+        })
+        if (verify!=null) {
+            const user = await prisma.user.update({
+                where:{
+                    password: password,
+                    username: username
+                },
+                data:{password: newPassword}
+            })
+        }else{
+            return res.json({error: true})
+        }
+    }
 })
 
 router.post('/auth', async (req, res) => {
@@ -91,7 +121,11 @@ router.post('/getUser', async (req,res) => {
         }
     })
 
-    return res.json(user)
+    if (user!=null) {
+        return res.json(user)
+    }else{
+        return res.json({error : true})
+    }
 })
 
 router.post("/createItem", auth,  async (req, res) => {
@@ -235,6 +269,30 @@ router.get('/getAllItems', async (req, res) => {
     }
     
     return res.json({items, ratings})
+})
+
+router.post("/getVoteQuantity", async (req, res) => {
+    const {username} = req.body
+
+    const user = await prisma.user.findUnique({
+        where:{
+            username: username
+        },
+        select:{
+            id : true
+        }
+    })
+
+    const voteQuantity = await prisma.user_Item.groupBy({
+        by: ["userID"],
+        _count:{
+            itemID: true
+        },
+        where:{
+            userID: user.id
+        }
+    })
+    return res.json(voteQuantity)
 })
 
 router.post('/editItem', auth, async (req, res) => {

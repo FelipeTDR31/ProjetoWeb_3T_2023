@@ -9,13 +9,14 @@ const imageLoader = ({ src } : { src : string }) => {
 
 
 
-export default function ItemRank({id, title, imageName, rating} : {id: number,title: string, imageName : string, rating: number}) {
-    let rankCount = 0
+export default function ItemRank({id, title, imageName, rating, showRating} : {id: number,title: string, imageName : string, rating: number, showRating: boolean}) {
 
     return(
         <>
             <Image loader={imageLoader} src={imageName} alt={title} width={180} height={180} />
-            <span>Ranking: {rating}</span>
+            {
+                showRating ? <span className='itemRating'>Ranking: {rating}</span> : <span></span>
+            }
         </>
     )
 }

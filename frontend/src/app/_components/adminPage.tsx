@@ -7,6 +7,8 @@ import ItemEdit from './items/itemEdit'
 import ItemRank from './items/itemRank'
 import EditItemForm from './editItemForm'
 import ReactDOM from 'react-dom'
+import Image from 'next/image'
+import changeImg from '../../../images/mudar.png'
 
 export default function AdminPage({username, email} : {username: string, email: string}) {
     type itemInfo = {
@@ -16,7 +18,6 @@ export default function AdminPage({username, email} : {username: string, email: 
     }
 
     const [rankItems, setRankItems] = React.useState<React.ReactElement[]>([])
-    const [items, setItems] = React.useState<itemInfo[]>([])
     const [editItems, setEditItems] = React.useState<React.ReactElement[]>([])
     const [numberOfItems, setNumberOfItems] = React.useState<number>(0)
 
@@ -74,10 +75,13 @@ export default function AdminPage({username, email} : {username: string, email: 
                 if (editItems.length != numberOfItems && data.items.length == numberOfItems) {
                     console.log("Adicionado")
                     let num = numberOfItems-1
-                    const itemRating = data.ratings[num]
+                    let itemRating = data.ratings[num]
+                    if (typeof itemRating != "number") {
+                        itemRating = 0
+                    }
                     const imageName = data.items[num].image.split("/")[1]
-                    let component = <ItemEdit id={data.items[num].id} title={data.items[num].title} imageName={imageName} deleteItem={deleteItem} editItemForm={<EditItemForm itemId={items[num].id.toString()} itemTitle={items[num].title} editItemInfo={editItemInfo} />} />
-                    let component2 = <ItemRank id={data.items[num].id} title={data.items[num].title} imageName={imageName} rating={itemRating} />
+                    let component = <ItemEdit id={data.items[num].id} title={data.items[num].title} imageName={imageName} deleteItem={deleteItem} editItemForm={<EditItemForm itemId={data.items[num].id.toString()} itemTitle={data.items[num].title} editItemInfo={editItemInfo} />} />
+                    let component2 = <ItemRank id={data.items[num].id} title={data.items[num].title} imageName={imageName} rating={itemRating} showRating={true} />
                     let array = editItems
                     let array2 = rankItems
                     array.push(component)
@@ -87,16 +91,17 @@ export default function AdminPage({username, email} : {username: string, email: 
                     setNumberOfItems(editItems.length)
                 }else if ( data.items.length != numberOfItems && (data.items.length)>(numberOfItems+1) && editItems.length == numberOfItems) {
                     console.log("LOOOP")
-                    console.log(data.items.length)
                     console.log(numberOfItems)
                     console.log("____________")
                     for (let i = 0; i < (data.items.length); i++) {
                         const item = data.items[i]
-                        const itemRating = data.ratings[i]
+                        let itemRating = data.ratings[i]
+                        if (typeof itemRating != "number") {
+                            itemRating = 0
+                        }
                         const imageName = item.image.split("/")[1]
-                        console.log(item)
                         let component = <ItemEdit id={item.id} title={item.title} imageName={imageName} deleteItem={deleteItem} editItemForm={<EditItemForm itemId={item.id.toString()} itemTitle={item.title} editItemInfo={editItemInfo} />} />
-                        let component2 = <ItemRank id={item.id} title={item.title} imageName={imageName} rating={itemRating} />
+                        let component2 = <ItemRank id={item.id} title={item.title} imageName={imageName} rating={itemRating} showRating={true} />
                         let array = editItems
                         let array2 = rankItems
     
@@ -105,9 +110,14 @@ export default function AdminPage({username, email} : {username: string, email: 
                         setEditItems(array)
                         setRankItems(array2)
                     }
+                    console.log("Data.items.length: "+data.items.length)
                     setNumberOfItems(data.items.length)
-    
-                }
+                    console.log(numberOfItems)
+
+                    const ascItems = rankItems
+                    .sort((a, b) => b.props.rating - a.props.rating) // Sort items by rating (highest first)
+                setRankItems(ascItems)
+                }   
             })
         })
 
@@ -136,7 +146,7 @@ export default function AdminPage({username, email} : {username: string, email: 
                         let newNumber = numberOfItems + 1
                         setNumberOfItems(newNumber)
                         setEditItems([...editItems, <ItemEdit id={data.id} title={data.title} imageName={data.image.split("/")[1]} deleteItem={deleteItem} editItemForm={<EditItemForm itemId={data.id} itemTitle={data.title} editItemInfo={editItemInfo} />} />])
-                        setRankItems([...rankItems, <ItemRank id={data.id} title={data.title} imageName={data.image.split("/")[1]} rating={0} />])
+                        setRankItems([...rankItems, <ItemRank id={data.id} title={data.title} imageName={data.image.split("/")[1]} rating={0} showRating={true} />])
                         
                     }
                 })
@@ -168,7 +178,7 @@ export default function AdminPage({username, email} : {username: string, email: 
                     }else{
                         let itemIndex = 0
                         let updatedItem1 = <ItemEdit id={data.id} title={data.title} imageName={data.image.split("/")[1]} deleteItem={deleteItem} editItemForm={<EditItemForm itemId={data.id} itemTitle={data.title} editItemInfo={editItemInfo} />} />
-                        let updatedItem2 = <ItemRank id={data.id} title={data.title} imageName={data.image.split("/")[1]} rating={0} />
+                        let updatedItem2 = <ItemRank id={data.id} title={data.title} imageName={data.image.split("/")[1]} rating={0} showRating={true} />
                         for (let i = 0; i < editItems.length; i++) {
                             const editItem = editItems[i];
                             if (editItem.props.id==updatedItem1.props.id) {
@@ -189,6 +199,15 @@ export default function AdminPage({username, email} : {username: string, email: 
                 })
             }
         }
+    }
+
+    function changeOrder() {
+        let containers = document.querySelector(".rankItems")
+            if (containers!.classList.contains("invert")) {
+                containers!.classList.remove("invert")
+            }else{
+                containers!.classList.add("invert")
+            }
     }
 
     return(
@@ -230,7 +249,7 @@ export default function AdminPage({username, email} : {username: string, email: 
                 </div>
 
                 <div className="ranking">
-                    <h1>Ranking dos Itens</h1>
+                    <h1>Ranking dos Itens - <Image onClick={changeOrder} src={changeImg} alt={'changeIMG'} width={30} height={30} style={{cursor:"pointer"}} /></h1>
                     <div className='rankItems'>
                         {
                             rankItems.map((rankItem, key) => {

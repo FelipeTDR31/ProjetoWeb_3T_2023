@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
 import ItemRank from './items/itemRank'
 
@@ -19,6 +18,24 @@ export default function VotePage({username, changePage} : {username : String, ch
     let i = 0
     useEffect(() => {
         if (i === 0) {
+            fetch("http://localhost:4000/getVoteQuantity", {
+                method : "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({username: username})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.length!=0 && data[0]._count.itemID>0 && data[0]._count.itemID<rankItems.length) {
+                    let num = data[0]._count.itemID
+                    setCurrentItemIndex(num)
+                }else if (data.length!=0 && data[0]._count.itemID==rankItems.length) {
+                    setCurrentItemIndex(data[0]._count.itemID)
+                    
+                }
+            })
+
             fetch("http://localhost:4000/getAllItems", {
                 method: 'GET',
                 headers: {
@@ -29,15 +46,10 @@ export default function VotePage({username, changePage} : {username : String, ch
             .then(data => setItems(data.items))
             .then(() => {
                 if ( items.length != numberOfItems && (items.length)>(numberOfItems+1) && rankItems.length == numberOfItems) {
-                    console.log("LOOOP")
-                    console.log(items.length)
-                    console.log(numberOfItems)
-                    console.log("____________")
                     for (let i = 0; i < (items.length); i++) {
                         const item = items[i];
                         const imageName = item.image.split("/")[1]
-                        console.log(item)
-                        let component = <ItemRank id={item.id} title={item.title} imageName={imageName} rating={0} />
+                        let component = <ItemRank id={item.id} title={item.title} imageName={imageName} rating={0} showRating={false} />
                         let array = rankItems
                         array.push(component)
                         setRankItems(array)
@@ -46,10 +58,13 @@ export default function VotePage({username, changePage} : {username : String, ch
 
                 }
             })
+
+            i = 1
         }
     })
 
     async function voting(e : React.FormEvent) {
+
         if (e.currentTarget.classList.contains("like")) {
             let itemId = e.currentTarget.id
             let type = "like"
@@ -88,8 +103,8 @@ export default function VotePage({username, changePage} : {username : String, ch
                             rankItems.map((rankItem, key) => {
                                 if (currentItemIndex == key) {
                                     return (
-                                        <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                                            <div key={key} className='rankItemContainer'>
+                                        <div key={key} style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                                            <div className='rankItemContainer'>
                                                 {rankItem}
                                             </div>
 
@@ -99,18 +114,15 @@ export default function VotePage({username, changePage} : {username : String, ch
                                             </div>
                                         </div>
                                     )
-                                }else if (currentItemIndex > key) {
-                                    return (
-                                        <div>
-                                            <p>Você votou em todos os itens!</p>
-                                            <button type='button' onClick={changePage}>Voltar</button>
-                                        </div>
-                                    )
                                 }
                             })
                         }
-                    </div>
 
+                        {
+                            currentItemIndex>=rankItems.length ? <div><p style={{fontSize:"1.5rem", fontWeight: "bold", padding: "20px"}}>Todos os Itens Foram Votados</p></div> : null
+                        }
+                    </div>
+                    <button className='voteBtn' type="button" onClick={changePage} style={{top:"40vh"}}>VOLTAR</button>
                 </div>
         </section>
     )
