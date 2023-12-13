@@ -47,7 +47,7 @@ Em grupos formados por até 4 pessoas, vocês devem desenvolver um sistema que, 
 O sistema deve possuir dois papéis para as pessoas que vão o utilizar com permissões distintas: pessoa usuária e gerente. Abaixo vocês podem conferir quais são as atividades que podem/devem ser realizadas por cada papel.
 
 #### Pessoa usuária
-- [] Criar e editar informações de pessoa usuária (e-mail, senha, nome)
+- [x] Criar e editar informações de pessoa usuária (e-mail, senha, nome)
 - [x] Fazer login e logout no sistema
 - [x] Classificar itens (Indicar se gosta de uma série, se comeria uma comida, etc).
 - [x] Visualizar rankings dos itens classificados como mais queridos
